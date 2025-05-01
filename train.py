@@ -131,20 +131,20 @@ print(Y.shape)
 split_index = int(X.shape[0] * 0.8)
 
 X_train = X[:split_index]
-X_test = X[split_index:]
+X_val = X[split_index:]
 
 Y_train = Y[:split_index]
-Y_test = Y[split_index:]
+Y_val = Y[split_index:]
 
-X_train.shape, Y_train.shape, X_test.shape, Y_test.shape
+print(X_train.shape, Y_train.shape, X_val.shape, Y_val.shape)
 
 X_train = torch.tensor(X_train).float()
 Y_train = torch.tensor(Y_train).float()
 
-X_test = torch.tensor(X_test).float()
-Y_test = torch.tensor(Y_test).float()
+X_val = torch.tensor(X_val).float()
+Y_val = torch.tensor(Y_val).float()
 
-print(X_train.shape, Y_train.shape, X_test.shape, Y_test.shape)
+print(X_train.shape, Y_train.shape, X_val.shape, Y_val.shape)
 
 class WildfireDataset(Dataset):
     def __init__(self, X, Y):
