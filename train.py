@@ -174,7 +174,7 @@ if torch.cuda.is_available():
 elif torch.mps.is_available():
     device = torch.device("mps")
 else:
-    device = torch.device("cpu")
+    exit("No GPU or MPS available. Exiting...")
 
 print(device)
 
