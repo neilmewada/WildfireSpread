@@ -71,7 +71,7 @@ max_values = [np.float32(15976.0),
 fire_folders = []
 look_back = 5   # 5 days sequence
 all_frames = []
-data_limit, loop_counter, loop_start = 200, 0, 0
+data_limit, loop_counter, loop_start = 100, 0, 0
 channel_descriptions = None
 base_path = "./data/2020"
 
