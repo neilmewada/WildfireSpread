@@ -19,6 +19,9 @@ from torch.optim.lr_scheduler import StepLR
 # Base values
 channel_descriptions = ['M11', 'I2', 'I1', 'NDVI_last', 'EVI2_last', 'total precipitation', 'wind speed', 'wind direction', 'minimum temperature', 'maximum temperature', 'energy release component', 'specific humidity', 'slope', 'aspect', 'elevation', 'pdsi', 'LC_Type1', 'total_precipitation_surface_last', 'forecast wind speed', 'forecast wind direction', 'forecast temperature', 'forecast specific humidity', 'active fire']
 
+##################################################################
+# Min and max values for each channel
+
 min_values = [np.float32(-100.0),
   np.float32(-100.0),
   np.float32(-100.0),
@@ -68,6 +71,9 @@ max_values = [np.float32(15976.0),
   np.float32(2218.0)]
 
 
+###########################################################
+# Loading dataset
+
 fire_folders = []
 look_back = 5   # 5 days sequence
 all_frames = []
@@ -77,7 +83,7 @@ base_path = "./data"
 
 target_shape_h, target_shape_w = 128, 128
 
-print('Loading...')
+print('Loading dataset...')
 
 for fire_folder in os.listdir(base_path):
     loop_counter += 1
@@ -103,9 +109,10 @@ print(f'Loading done! Count = {len(all_frames)} | Shape = {all_frames[0].shape}'
 data_frames = np.stack(all_frames)
 print(data_frames.shape)
 
-from sklearn.preprocessing import MinMaxScaler, minmax_scale
+###########################################################
+# Preprocessing
 
-#data_frames = (data_frames - min_bound) / (max_bound - min_bound)
+from sklearn.preprocessing import MinMaxScaler, minmax_scale
 
 for c in range(23):
     data_frames[:, c, :, :] = (data_frames[:, c, :, :] - min_values[c]) / (max_values[c] - min_values[c])
@@ -160,12 +167,16 @@ batch_size = 8
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
+###########################################################
+# Load cuda or cpu
+
 if torch.cuda.is_available():
     device = torch.device("cuda")
-elif torch.mps.is_available():
-    device = torch.device("mps")
 else:
     device = torch.device("cpu")
+
+###########################################################
+# Neural Network
 
 import convlstm
 
@@ -196,11 +207,17 @@ class Net(nn.Module):
         x = outputs[0][:, -1, :, :, :]
         x = self.head(x)
         return x
+    
+###########################################################
+# Load model weights
 
 model = Net().to(device)
 
 model.load_state_dict(torch.load('model-weights.pth'))
 model.eval()
+
+###########################################################
+# Testing the model with test dataset
 
 tolerance = 0.01
 accuracy = 0
@@ -263,5 +280,6 @@ avg_dice = dice / precision_counter
 
 f1 = 2 * avg_precision * avg_recall / (avg_precision + avg_recall + eps)
 
+print("Testing done! Results below:")
 print(f"Precision: {avg_precision}; Recall: {avg_recall}; IoU: {avg_iou}, Dice: {avg_dice}, F1: {f1}")
 
