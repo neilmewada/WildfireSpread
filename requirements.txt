@@ -1,2 +1,8 @@
+torch
+torchvision
+rasterio
+scipy
 scikit-learn
 scikit-image
+numpy
+matplotlib
