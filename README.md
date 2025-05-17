@@ -1,5 +1,6 @@
 # WildfireSpread
 
+Please read README.pdf file!
 
 
 ## Getting started
